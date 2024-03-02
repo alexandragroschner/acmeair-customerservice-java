@@ -55,6 +55,9 @@ public class CustomerInfo implements Serializable {
   
   @XmlElement(name = "phoneNumberType")
   private String phoneNumberType;
+
+  @XmlElement(name = "loyaltyPoints")
+  private int loyaltyPoints;
   
   public CustomerInfo() {
   }
@@ -62,8 +65,8 @@ public class CustomerInfo implements Serializable {
   /**
    * Create CustomerInfo.
    */
-  public CustomerInfo(String username, String password, String status, int totalMiles, 
-      int milesYtd, AddressInfo address, String phoneNumber, String phoneNumberType) {
+  public CustomerInfo(String username, String password, String status, int totalMiles,
+                      int milesYtd, AddressInfo address, String phoneNumber, String phoneNumberType, int loyaltyPoints) {
     this._id = username;
     this.password = password;
     this.status = status;
@@ -72,6 +75,7 @@ public class CustomerInfo implements Serializable {
     this.address = address;
     this.phoneNumber = phoneNumber;
     this.phoneNumberType = phoneNumberType;
+    this.loyaltyPoints = loyaltyPoints;
   }
   
   public String get_id() {
@@ -114,6 +118,14 @@ public class CustomerInfo implements Serializable {
     this.miles_ytd = milesYtd;
   }
 
+  public int getLoyaltyPoints() {
+    return loyaltyPoints;
+  }
+
+  public void setLoyaltyPoints(int loyaltyPoints) {
+    this.loyaltyPoints = loyaltyPoints;
+  }
+
   public String getPhoneNumber() {
     return phoneNumber;
   }
@@ -142,7 +154,7 @@ public class CustomerInfo implements Serializable {
   public String toString() {
     return "Customer [id=" + _id + ", password=" + password + ", status="
         + status + ", total_miles=" + total_miles + ", miles_ytd="
-        + miles_ytd + ", address=" + address + ", phoneNumber="
+        + miles_ytd + "loyaltyPoints=" + loyaltyPoints + ", address=" + address + ", phoneNumber="
         + phoneNumber + ", phoneNumberType=" + phoneNumberType + "]";
   }
 
@@ -198,6 +210,6 @@ public class CustomerInfo implements Serializable {
     if (total_miles != other.total_miles) {
       return false;
     }
-    return true;
+    return loyaltyPoints == other.loyaltyPoints;
   }
 }

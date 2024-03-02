@@ -63,7 +63,7 @@ public class CustomerServiceImpl extends CustomerService {
 
   @Override
   public void createCustomers(List<CustomerInfo> customers) {
-    List<Document> documents = new ArrayList<Document>(WRITE_BATCH_SIZE);
+    List<Document> documents = new ArrayList<>(WRITE_BATCH_SIZE);
     for (int i=0; i<customers.size(); i++) {
       documents.add(parseCustomerInfo(customers.get(i)));
       if ( i % WRITE_BATCH_SIZE == 0 ) {
@@ -87,7 +87,8 @@ public class CustomerServiceImpl extends CustomerService {
     customer.updateOne(eq("_id", customerInfo.get_id()),
         combine(set("status", customerInfo.getStatus()), 
             set("total_miles", customerInfo.getTotal_miles()),
-            set("miles_ytd", customerInfo.getMiles_ytd()), 
+            set("miles_ytd", customerInfo.getMiles_ytd()),
+            set("loyaltyPoints", customerInfo.getLoyaltyPoints()),
             set("address", address),
             set("phoneNumber", customerInfo.getPhoneNumber()),
             set("phoneNumberType", customerInfo.getPhoneNumberType())));
@@ -143,6 +144,7 @@ public class CustomerServiceImpl extends CustomerService {
             .append("password", customerInfo.getPassword())
             .append("status", customerInfo.getStatus())
             .append("total_miles", customerInfo.getTotal_miles()).append("miles_ytd", customerInfo.getMiles_ytd())
+            .append("loyaltyPoints", customerInfo.getLoyaltyPoints())
             .append("address", parseAddressInfo(customerInfo.getAddress()))
             .append("phoneNumber", customerInfo.getPhoneNumber())
             .append("phoneNumberType", customerInfo.getPhoneNumberType());
