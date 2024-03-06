@@ -67,11 +67,8 @@ public class CustomerServiceTests {
   private static final String VALIDATE_RESPONSE = "{\"validated\":true}";
   private static final String VALIDATE_BAD_RESPONSE = "{\"validated\":false}";
 
-  private static final String UPDATE_MILES_ENDPOINT = "/internal/updateCustomerTotalMiles/uid0@email.com";
-  private static final String UPDATE_MILES_RESPONSE = "{\"miles\":10}";
-
   private static final String GET_CUSTOMER_ENDPOINT = "/byid/uid0@email.com";
-  private static final String CUSTOMER_UPDATE = "{ \"_id\" : \"" + USERNAME + "\", \"status\" : \"GOLD\", \"total_miles\" : 1000000, \"miles_ytd\" : 1000, \"address\" : { \"streetAddress1\" : \"123 Main St.\", \"streetAddress2\" : \"NOTNULL\", \"city\" : \"Anytown\", \"stateProvince\" : \"NC\", \"country\" : \"USA\", \"postalCode\" : \"27617\" }, \"phoneNumber\" : \"919-123-4567\", \"phoneNumberType\" : \"BUSINESS\", \"password\" : \"" + PASSWORD + "\" }";
+  private static final String CUSTOMER_UPDATE = "{ \"_id\" : \"" + USERNAME + "\", \"address\" : { \"streetAddress1\" : \"123 Main St.\", \"streetAddress2\" : \"NOTNULL\", \"city\" : \"Anytown\", \"stateProvince\" : \"NC\", \"country\" : \"USA\", \"postalCode\" : \"27617\" }, \"phoneNumber\" : \"919-123-4567\", \"phoneNumberType\" : \"BUSINESS\", \"password\" : \"" + PASSWORD + "\" }";
 
   private static final String GET_CUSTOMER_RESPONSE = ""; 
 
@@ -193,27 +190,6 @@ Version.Main.PRODUCTION.getFeatures());
     
     String result = response.readEntity(String.class);
     assertThat(result, containsString(VALIDATE_BAD_RESPONSE));
-        
-    response.close();
-  }
-
-  @Test
-  public void test6_UpdateMiles() throws InterruptedException {
-    String url = BASE_URL_WITH_CONTEXT_ROOT + UPDATE_MILES_ENDPOINT; 
-    
-    WebTarget target = client.target(url);
-     
-    Form form = new Form();
-    form.param("miles", "10");
-    
-    Response response = target.request().post(Entity.entity(form,MediaType.APPLICATION_FORM_URLENCODED_TYPE),Response.class);
-    Thread.sleep(20);
-    assertEquals("Incorrect response code from " + url, 
-      Status.OK.getStatusCode(), response.getStatus());
-
-    
-    String result = response.readEntity(String.class);
-    assertThat(result, containsString(UPDATE_MILES_RESPONSE));
         
     response.close();
   }

@@ -22,11 +22,11 @@ import com.acmeair.web.dto.CustomerInfo;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.connection.ConnectionDescription;
-import org.bson.Document;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.bson.Document;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,11 +85,7 @@ public class CustomerServiceImpl extends CustomerService {
     Document address = parseAddressInfo(customerInfo.getAddress());
 
     customer.updateOne(eq("_id", customerInfo.get_id()),
-        combine(set("status", customerInfo.getStatus()), 
-            set("total_miles", customerInfo.getTotal_miles()),
-            set("miles_ytd", customerInfo.getMiles_ytd()),
-            set("loyaltyPoints", customerInfo.getLoyaltyPoints()),
-            set("address", address),
+        combine(set("address", address),
             set("phoneNumber", customerInfo.getPhoneNumber()),
             set("phoneNumberType", customerInfo.getPhoneNumberType())));
   }
@@ -142,9 +138,6 @@ public class CustomerServiceImpl extends CustomerService {
   private Document parseCustomerInfo(CustomerInfo customerInfo) {
     return new Document("_id", customerInfo.get_id())
             .append("password", customerInfo.getPassword())
-            .append("status", customerInfo.getStatus())
-            .append("total_miles", customerInfo.getTotal_miles()).append("miles_ytd", customerInfo.getMiles_ytd())
-            .append("loyaltyPoints", customerInfo.getLoyaltyPoints())
             .append("address", parseAddressInfo(customerInfo.getAddress()))
             .append("phoneNumber", customerInfo.getPhoneNumber())
             .append("phoneNumberType", customerInfo.getPhoneNumberType());

@@ -17,18 +17,13 @@
 package com.acmeair.web;
 
 import com.acmeair.service.CustomerService;
-import com.acmeair.web.dto.AddressInfo;
-import com.acmeair.web.dto.CustomerInfo;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
 import jakarta.ws.rs.*;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
-import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,56 +70,4 @@ public class CustomerServiceRestInternal {
 
 //USER ADDED CODE:
 
-  /**
-   * Update reward miles and loyalty points of a customer.
-   */
-  @POST
-  @Path("/updateCustomerTotalMiles/{custid}")
-  @Consumes({"application/x-www-form-urlencoded"})
-  @Produces("application/json")
-  @Timed(name = "com.acmeair.web.CustomerServiceRestInternal.updateCustomerTotalMiles", tags = {"app=acmeair-customerservice-java"})
-  public CustomerMilesResponse updateCustomerTotalMiles(
-          @PathParam("custid") String customerid,
-          @FormParam("miles") Long miles,
-          @FormParam("loyalty") Long loyaltyPoints) {
-
-    JsonReader jsonReader = rfactory.createReader(new StringReader(customerService
-            .getCustomerByUsername(customerid)));
-
-    JsonObject customerJson = jsonReader.readObject();
-    jsonReader.close();
-
-    JsonObject addressJson = customerJson.getJsonObject("address");
-
-    String streetAddress2 = null;
-
-    if (addressJson.get("streetAddress2") != null
-            && !addressJson.get("streetAddress2").toString().equals("null")) {
-      streetAddress2 = addressJson.getString("streetAddress2");
-    }
-
-    AddressInfo addressInfo = new AddressInfo(addressJson.getString("streetAddress1"),
-            streetAddress2,
-            addressJson.getString("city"),
-            addressJson.getString("stateProvince"),
-            addressJson.getString("country"),
-            addressJson.getString("postalCode"));
-
-    Long milesUpdate = customerJson.getInt("total_miles") + miles;
-    Long loyaltyUpdate = customerJson.getInt("loyaltyPoints") + loyaltyPoints;
-    CustomerInfo customerInfo = new CustomerInfo(customerid,
-            null,
-            customerJson.getString("status"),
-            milesUpdate.intValue(),
-            customerJson.getInt("miles_ytd"),
-            addressInfo,
-            customerJson.getString("phoneNumber"),
-            customerJson.getString("phoneNumberType"),
-            loyaltyUpdate.intValue());
-
-    customerService.updateCustomer(customerid, customerInfo);
-    logger.warning("Customer updated (miles: " + milesUpdate + ", loyaltyPoints: " + loyaltyUpdate + ")");
-
-    return new CustomerMilesResponse(milesUpdate, loyaltyUpdate);
-  }
 }

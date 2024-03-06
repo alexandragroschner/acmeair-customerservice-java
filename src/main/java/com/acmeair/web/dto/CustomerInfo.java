@@ -16,12 +16,13 @@
 
 package com.acmeair.web.dto;
 
-import java.io.Serializable;
-
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
@@ -30,100 +31,52 @@ public class CustomerInfo implements Serializable {
 
 
   private static final long serialVersionUID = 1L;
-  
+
   // Ignore checkstyle warning, only works on tomee like this
-  @XmlElement(name = "_id") 
+  @XmlElement(name = "_id")
   private String _id;
-  
+
   @XmlElement(name = "password")
   private String password;
 
-  @XmlElement(name = "status")
-  private String status;
-  
-  @XmlElement(name = "total_miles")
-  private int total_miles;
-  
-  @XmlElement(name = "miles_ytd")
-  private int miles_ytd;
-
   @XmlElement(name = "address")
   private AddressInfo address;
-  
+
   @XmlElement(name = "phoneNumber")
   private String phoneNumber;
-  
+
   @XmlElement(name = "phoneNumberType")
   private String phoneNumberType;
 
-  @XmlElement(name = "loyaltyPoints")
-  private int loyaltyPoints;
-  
   public CustomerInfo() {
+    //CDI
   }
-  
+
   /**
    * Create CustomerInfo.
    */
-  public CustomerInfo(String username, String password, String status, int totalMiles,
-                      int milesYtd, AddressInfo address, String phoneNumber, String phoneNumberType, int loyaltyPoints) {
+  public CustomerInfo(String username, String password, AddressInfo address, String phoneNumber, String phoneNumberType) {
     this._id = username;
     this.password = password;
-    this.status = status;
-    this.total_miles = totalMiles;
-    this.miles_ytd = milesYtd;
     this.address = address;
     this.phoneNumber = phoneNumber;
     this.phoneNumberType = phoneNumberType;
-    this.loyaltyPoints = loyaltyPoints;
   }
-  
+
   public String get_id() {
     return _id;
   }
-  
+
   public void set_id(String username) {
     this._id = username;
   }
-  
+
   public String getPassword() {
     return password;
   }
-  
+
   public void setPassword(String password) {
     this.password = password;
-  }
-  
-  public String getStatus() {
-    return status;
-  }
-  
-  public void setStatus(String status) {
-    this.status = status;
-  }
-  
-  public int getTotal_miles() {
-    return total_miles;
-  }
-  
-  public void setTotal_miles(int totalMiles) {
-    this.total_miles = totalMiles;
-  }
-  
-  public int getMiles_ytd() {
-    return miles_ytd;
-  }
-
-  public void setMilesYtd(int milesYtd) {
-    this.miles_ytd = milesYtd;
-  }
-
-  public int getLoyaltyPoints() {
-    return loyaltyPoints;
-  }
-
-  public void setLoyaltyPoints(int loyaltyPoints) {
-    this.loyaltyPoints = loyaltyPoints;
   }
 
   public String getPhoneNumber() {
@@ -152,10 +105,8 @@ public class CustomerInfo implements Serializable {
 
   @Override
   public String toString() {
-    return "Customer [id=" + _id + ", password=" + password + ", status="
-        + status + ", total_miles=" + total_miles + ", miles_ytd="
-        + miles_ytd + "loyaltyPoints=" + loyaltyPoints + ", address=" + address + ", phoneNumber="
-        + phoneNumber + ", phoneNumberType=" + phoneNumberType + "]";
+    return "Customer [id=" + _id + ", password=" + password + ", address=" + address + ", phoneNumber="
+            + phoneNumber + ", phoneNumberType=" + phoneNumberType + "]";
   }
 
   @Override
@@ -184,9 +135,6 @@ public class CustomerInfo implements Serializable {
     } else if (!_id.equals(other._id)) {
       return false;
     }
-    if (miles_ytd != other.miles_ytd) {
-      return false;
-    }
     if (password == null) {
       if (other.password != null) {
         return false;
@@ -201,15 +149,6 @@ public class CustomerInfo implements Serializable {
     } else if (!phoneNumber.equals(other.phoneNumber)) {
       return false;
     }
-    if (phoneNumberType != other.phoneNumberType) {
-      return false;
-    }
-    if (status != other.status) {
-      return false;
-    }
-    if (total_miles != other.total_miles) {
-      return false;
-    }
-    return loyaltyPoints == other.loyaltyPoints;
+    return Objects.equals(phoneNumberType, other.phoneNumberType);
   }
 }
