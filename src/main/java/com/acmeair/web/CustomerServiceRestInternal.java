@@ -88,7 +88,6 @@ public class CustomerServiceRestInternal {
           @FormParam("miles") Long miles,
           @FormParam("loyalty") Long loyaltyPoints) {
 
-    logger.warning("UPDATING CUSTOMER MILES");
     JsonReader jsonReader = rfactory.createReader(new StringReader(customerService
             .getCustomerByUsername(customerid)));
 
@@ -124,6 +123,7 @@ public class CustomerServiceRestInternal {
             loyaltyUpdate.intValue());
 
     customerService.updateCustomer(customerid, customerInfo);
+    logger.warning("Customer updated (miles: " + milesUpdate + ", loyaltyPoints: " + loyaltyUpdate + ")");
 
     return new CustomerMilesResponse(milesUpdate, loyaltyUpdate);
   }
