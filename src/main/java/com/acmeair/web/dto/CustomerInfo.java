@@ -16,12 +16,12 @@
 
 package com.acmeair.web.dto;
 
-import java.io.Serializable;
-
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serializable;
 
 
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
@@ -37,9 +37,6 @@ public class CustomerInfo implements Serializable {
   
   @XmlElement(name = "password")
   private String password;
-
-  @XmlElement(name = "status")
-  private String status;
   
   @XmlElement(name = "total_miles")
   private int total_miles;
@@ -65,11 +62,10 @@ public class CustomerInfo implements Serializable {
   /**
    * Create CustomerInfo.
    */
-  public CustomerInfo(String username, String password, String status, int totalMiles,
+  public CustomerInfo(String username, String password, int totalMiles,
                       int milesYtd, AddressInfo address, String phoneNumber, String phoneNumberType, int loyaltyPoints) {
     this._id = username;
     this.password = password;
-    this.status = status;
     this.total_miles = totalMiles;
     this.miles_ytd = milesYtd;
     this.address = address;
@@ -92,14 +88,6 @@ public class CustomerInfo implements Serializable {
   
   public void setPassword(String password) {
     this.password = password;
-  }
-  
-  public String getStatus() {
-    return status;
-  }
-  
-  public void setStatus(String status) {
-    this.status = status;
   }
   
   public int getTotal_miles() {
@@ -152,8 +140,7 @@ public class CustomerInfo implements Serializable {
 
   @Override
   public String toString() {
-    return "Customer [id=" + _id + ", password=" + password + ", status="
-        + status + ", total_miles=" + total_miles + ", miles_ytd="
+    return "Customer [id=" + _id + ", password=" + password + ", total_miles=" + total_miles + ", miles_ytd="
         + miles_ytd + "loyaltyPoints=" + loyaltyPoints + ", address=" + address + ", phoneNumber="
         + phoneNumber + ", phoneNumberType=" + phoneNumberType + "]";
   }
@@ -202,9 +189,6 @@ public class CustomerInfo implements Serializable {
       return false;
     }
     if (phoneNumberType != other.phoneNumberType) {
-      return false;
-    }
-    if (status != other.status) {
       return false;
     }
     if (total_miles != other.total_miles) {

@@ -61,7 +61,7 @@ public class CustomerLoader {
 
             AddressInfo addressInfo = new AddressInfo("123 Main St.", null, "Anytown", "NC", "USA", "27617");
             for (long ii = 0; ii < numCustomers; ii++) {
-                customers.add(new CustomerInfo("uid" + ii + "@email.com", "password", "GOLD", 0, 0,
+                customers.add(new CustomerInfo("uid" + ii + "@email.com", "password", 0, 0,
                         addressInfo, "919-123-4567", "BUSINESS", 0));
             }
             customerService.createCustomers(customers);

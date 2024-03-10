@@ -114,7 +114,6 @@ public class CustomerServiceRestInternal {
     Long loyaltyUpdate = customerJson.getInt("loyaltyPoints") + loyaltyPoints;
     CustomerInfo customerInfo = new CustomerInfo(customerid,
             null,
-            customerJson.getString("status"),
             milesUpdate.intValue(),
             customerJson.getInt("miles_ytd"),
             addressInfo,
