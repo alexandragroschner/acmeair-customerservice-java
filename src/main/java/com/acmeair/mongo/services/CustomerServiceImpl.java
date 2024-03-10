@@ -16,6 +16,8 @@
 
 package com.acmeair.mongo.services;
 
+import com.acmeair.client.BookingClient;
+import com.acmeair.client.responses.CustomerMilesResponse;
 import com.acmeair.service.CustomerService;
 import com.acmeair.web.dto.AddressInfo;
 import com.acmeair.web.dto.CustomerInfo;
@@ -26,6 +28,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.bson.Document;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +46,9 @@ public class CustomerServiceImpl extends CustomerService {
     
   @Inject
   MongoDatabase database;
+  @Inject
+  @RestClient
+  private BookingClient bookingClient;
 
 
   @PostConstruct
@@ -98,9 +104,12 @@ public class CustomerServiceImpl extends CustomerService {
   @Override
   public String getCustomerByUsername(String username) {
     Document customerDoc = customer.find(eq("_id", username)).first();
+    CustomerMilesResponse milesResponse = bookingClient.getCustomerRewards(username);
     if (customerDoc != null) {
       customerDoc.remove("password");
       customerDoc.append("password", null);
+      customerDoc.append("total_miles", milesResponse.getMiles().toString());
+      customerDoc.append("loyaltyPoints", milesResponse.getLoyaltyPoints().toString());
     }
     return customerDoc.toJson();
   }
