@@ -82,6 +82,10 @@ public abstract class CustomerService {
     return c;
   }
 
+    public abstract String testPrepare(String id);
+
+  public abstract void testCommit(String id);
+
   public abstract Long count();
 
   public abstract void dropCustomers();

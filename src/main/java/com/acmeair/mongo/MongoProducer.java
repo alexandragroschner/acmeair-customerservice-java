@@ -22,13 +22,17 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 
+import jakarta.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperties;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Disposes;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
+import org.eclipse.microprofile.health.Startup;
 
+/*@Startup
+@Singleton */
 @ApplicationScoped
 public class MongoProducer {
 

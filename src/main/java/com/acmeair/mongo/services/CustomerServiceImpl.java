@@ -19,6 +19,8 @@ package com.acmeair.mongo.services;
 import com.acmeair.service.CustomerService;
 import com.acmeair.web.dto.AddressInfo;
 import com.acmeair.web.dto.CustomerInfo;
+import com.mongodb.MongoClient;
+import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.connection.ConnectionDescription;
@@ -28,7 +30,10 @@ import jakarta.inject.Inject;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
@@ -40,14 +45,44 @@ public class CustomerServiceImpl extends CustomerService {
   private MongoCollection<Document> customer;
   private Boolean isPopulated = false;
   private final int WRITE_BATCH_SIZE = ConnectionDescription.getDefaultMaxWriteBatchSize();
-    
+
+  private static final Logger logger = Logger.getLogger(CustomerServiceImpl.class.getName());
+
   @Inject
+  MongoClient mongoClient;
+/*  @Inject
+  @ConfigProperties
+  MongoProperties mongoProps;*/
+  //@Inject
   MongoDatabase database;
+
+  Map<String, ClientSession> sessionMap = new HashMap<>();
 
 
   @PostConstruct
   public void initialization() {
+    //this seems to work
+    logger.warning("Mongo CLient Options: " + mongoClient.getMongoClientOptions().toString());
+    database = mongoClient.getDatabase("acmeair_customerdb");
     customer = database.getCollection("customer");
+  }
+
+  @Override
+  public String testPrepare(String id) {
+    final ClientSession clientSession = mongoClient.startSession();
+    sessionMap.put(id, clientSession);
+
+    clientSession.startTransaction();
+    customer.insertOne(clientSession, new Document("_id", id));
+    return "OK";
+  }
+
+  @Override
+  public void testCommit(String id) {
+    final ClientSession session = sessionMap.get(id);
+    session.commitTransaction();
+    session.close();
+    sessionMap.remove(id);
   }
 
   @Override

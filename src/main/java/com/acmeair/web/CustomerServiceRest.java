@@ -116,6 +116,11 @@ public class CustomerServiceRest {
   @GET
   @Path("/status")
   public Response status() {
+    customerService.testPrepare("123");
+    logger.warning("Getting stuff for id 123 (before commit): " );
+            //+ customerService.getCustomerByUsername("123"));
+    customerService.testCommit("123");
+    logger.warning("Getting stuff for id 123 (after commit): " + customerService.getCustomerByUsername("123"));
     return Response.ok("OK").build();
 
   }
