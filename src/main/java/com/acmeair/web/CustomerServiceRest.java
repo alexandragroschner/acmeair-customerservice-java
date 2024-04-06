@@ -19,6 +19,7 @@ package com.acmeair.web;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.acmeair.web.dto.AddressInfo;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -116,12 +117,17 @@ public class CustomerServiceRest {
   @GET
   @Path("/status")
   public Response status() {
-    customerService.testPrepare("123");
-    logger.warning("Getting stuff for id 123 (before commit): " );
-            //+ customerService.getCustomerByUsername("123"));
-    customerService.testCommit("123");
-    logger.warning("Getting stuff for id 123 (after commit): " + customerService.getCustomerByUsername("123"));
-    return Response.ok("OK").build();
+    //TODO: Test code - remove
+    logger.warning("Getting data for user: " + customerService.getCustomerByUsername("uid0@email.com"));
+    AddressInfo address = new AddressInfo();
+    CustomerInfo customer = new CustomerInfo("uid0@email.com", "123", 0, 0, address, "555", "Made up", 0);
 
+    String sessionId = customerService.updateCustomerPrep("uid0@email.com", customer);
+    logger.warning("updating user uid0@email.com. User data before commit: " + customerService.getCustomerByUsername("uid0@email.com"));
+
+    customerService.testCommit(sessionId);
+    logger.warning("Getting stuff for id uid0@email.com (after commit): " + customerService.getCustomerByUsername("uid0@email.com"));
+
+    return Response.ok("OK").build();
   }
 }

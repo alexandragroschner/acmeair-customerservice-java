@@ -82,10 +82,6 @@ public abstract class CustomerService {
     return c;
   }
 
-    public abstract String testPrepare(String id);
-
-  public abstract void testCommit(String id);
-
   public abstract Long count();
 
   public abstract void dropCustomers();
@@ -95,5 +91,11 @@ public abstract class CustomerService {
   public abstract boolean isPopulated();
 
   public abstract boolean isConnected();
-  
+
+  //USER ADDED CODE:
+  public abstract String updateCustomerPrep(String username, CustomerInfo customerInfo);
+
+  public abstract String testPrepare(String id);
+
+  public abstract void testCommit(String id);
 }

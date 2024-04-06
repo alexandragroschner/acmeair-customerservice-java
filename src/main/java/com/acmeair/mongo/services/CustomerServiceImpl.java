@@ -17,6 +17,7 @@
 package com.acmeair.mongo.services;
 
 import com.acmeair.service.CustomerService;
+import com.acmeair.service.KeyGenerator;
 import com.acmeair.web.dto.AddressInfo;
 import com.acmeair.web.dto.CustomerInfo;
 import com.mongodb.MongoClient;
@@ -29,10 +30,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.bson.Document;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -45,17 +43,10 @@ public class CustomerServiceImpl extends CustomerService {
   private MongoCollection<Document> customer;
   private Boolean isPopulated = false;
   private final int WRITE_BATCH_SIZE = ConnectionDescription.getDefaultMaxWriteBatchSize();
-
   private static final Logger logger = Logger.getLogger(CustomerServiceImpl.class.getName());
-
   @Inject
   MongoClient mongoClient;
-/*  @Inject
-  @ConfigProperties
-  MongoProperties mongoProps;*/
-  //@Inject
   MongoDatabase database;
-
   Map<String, ClientSession> sessionMap = new HashMap<>();
 
 
@@ -65,24 +56,6 @@ public class CustomerServiceImpl extends CustomerService {
     logger.warning("Mongo CLient Options: " + mongoClient.getMongoClientOptions().toString());
     database = mongoClient.getDatabase("acmeair_customerdb");
     customer = database.getCollection("customer");
-  }
-
-  @Override
-  public String testPrepare(String id) {
-    final ClientSession clientSession = mongoClient.startSession();
-    sessionMap.put(id, clientSession);
-
-    clientSession.startTransaction();
-    customer.insertOne(clientSession, new Document("_id", id));
-    return "OK";
-  }
-
-  @Override
-  public void testCommit(String id) {
-    final ClientSession session = sessionMap.get(id);
-    session.commitTransaction();
-    session.close();
-    sessionMap.remove(id);
   }
 
   @Override
@@ -189,5 +162,44 @@ public class CustomerServiceImpl extends CustomerService {
             .append("stateProvince", addressInfo.getStateProvince())
             .append("country", addressInfo.getCountry())
             .append("postalCode", addressInfo.getPostalCode());
+  }
+
+  //USER ADDED CODE:
+  @Override
+  public String updateCustomerPrep(String username, CustomerInfo customerInfo) {
+    final ClientSession clientSession = mongoClient.startSession();
+    String sessionId = keyGenerator.generate().toString();
+    Document address = parseAddressInfo(customerInfo.getAddress());
+
+    clientSession.startTransaction();
+    customer.updateOne(clientSession, eq("_id", customerInfo.get_id()),
+            combine(set("total_miles", customerInfo.getTotal_miles()),
+                    set("miles_ytd", customerInfo.getMiles_ytd()),
+                    set("loyaltyPoints", customerInfo.getLoyaltyPoints()),
+                    set("address", address),
+                    set("phoneNumber", customerInfo.getPhoneNumber()),
+                    set("phoneNumberType", customerInfo.getPhoneNumberType())));
+
+    sessionMap.put(sessionId, clientSession);
+    return sessionId;
+  }
+
+
+  @Override
+  public String testPrepare(String id) {
+    final ClientSession clientSession = mongoClient.startSession();
+    sessionMap.put(id, clientSession);
+
+    clientSession.startTransaction();
+    customer.insertOne(clientSession, new Document("_id", id));
+    return "OK";
+  }
+
+  @Override
+  public void testCommit(String id) {
+    final ClientSession session = sessionMap.get(id);
+    session.commitTransaction();
+    session.close();
+    sessionMap.remove(id);
   }
 }

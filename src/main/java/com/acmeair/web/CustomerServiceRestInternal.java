@@ -126,4 +126,21 @@ public class CustomerServiceRestInternal {
 
     return new CustomerMilesResponse(milesUpdate, loyaltyUpdate);
   }
+
+  @GET
+  @Path("/getCustomerTotalMiles")
+  @Consumes({"application/x-www-form-urlencoded"})
+  @Produces("application/json")
+  public CustomerMilesResponse getCustomerTotalMiles(@QueryParam("custid") String customerid) {
+    JsonReader jsonReader = rfactory.createReader(new StringReader(customerService
+            .getCustomerByUsername(customerid)));
+
+    JsonObject customerJson = jsonReader.readObject();
+    jsonReader.close();
+
+    Long miles = Long.valueOf(customerJson.getInt("total_miles"));
+    Long loyalty = Long.valueOf(customerJson.getInt("total_miles"));
+
+    return new CustomerMilesResponse(miles, loyalty);
+  }
 }
