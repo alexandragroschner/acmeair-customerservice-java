@@ -97,5 +97,7 @@ public abstract class CustomerService {
 
   public abstract String testPrepare(String id);
 
-  public abstract void testCommit(String id);
+  public abstract void commitMongoTransaction(String mongoSessionId);
+
+  public abstract void abortMongoTransaction(String mongoSessionId);
 }

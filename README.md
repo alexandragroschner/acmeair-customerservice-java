@@ -21,3 +21,15 @@ See Documentation for the [Main Service](https://github.com/blueperf/acmeair-mai
 ## Istio Instructions
 
 See Documentation for the [Main Service](https://github.com/blueperf/acmeair-mainservice-java)
+
+## User added Instructions:
+
+```
+# cancel running mongotransaction
+MONGOID = id of the mongo session you want to abort
+curl -X POST -H "Content-Type: application/json" -d "$MONGOID" http://localhost/customer/internal/abort
+
+# commit running mongotransaction
+MONGOID = id of the mongo session you want to commit
+curl -X POST -H "Content-Type: application/json" -d "$MONGOID" http://localhost/customer/internal/commit
+```

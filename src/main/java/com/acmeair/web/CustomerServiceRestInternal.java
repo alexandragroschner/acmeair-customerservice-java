@@ -26,6 +26,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 import java.io.StringReader;
@@ -121,12 +122,13 @@ public class CustomerServiceRestInternal {
             customerJson.getString("phoneNumberType"),
             loyaltyUpdate.intValue());
 
-    customerService.updateCustomer(customerid, customerInfo);
+    String mongoSessionId = customerService.updateCustomerPrep(customerid, customerInfo);
     logger.warning("Customer updated (miles: " + milesUpdate + ", loyaltyPoints: " + loyaltyUpdate + ")");
 
-    return new CustomerMilesResponse(milesUpdate, loyaltyUpdate);
+    return new CustomerMilesResponse(milesUpdate, loyaltyUpdate, mongoSessionId);
   }
 
+  //USER ADDED CODE:
   @GET
   @Path("/getCustomerTotalMiles")
   @Consumes({"application/x-www-form-urlencoded"})
@@ -142,5 +144,23 @@ public class CustomerServiceRestInternal {
     Long loyalty = Long.valueOf(customerJson.getInt("total_miles"));
 
     return new CustomerMilesResponse(miles, loyalty);
+  }
+
+  @POST
+  @Path("/abort")
+  @Consumes({"application/json"})
+  @Produces("application/json")
+  public Response abortMongo(String mongoSessionId) {
+    customerService.abortMongoTransaction(mongoSessionId);
+    return Response.ok("MongoDB transaction aborted").build();
+  }
+
+  @POST
+  @Path("/commit")
+  @Consumes({"application/json"})
+  @Produces("application/json")
+  public Response commitMongo(String mongoSessionId) {
+    customerService.commitMongoTransaction(mongoSessionId);
+    return Response.ok("MongoDB transaction committed").build();
   }
 }

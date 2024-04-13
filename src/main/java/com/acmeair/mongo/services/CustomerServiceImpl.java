@@ -17,7 +17,6 @@
 package com.acmeair.mongo.services;
 
 import com.acmeair.service.CustomerService;
-import com.acmeair.service.KeyGenerator;
 import com.acmeair.web.dto.AddressInfo;
 import com.acmeair.web.dto.CustomerInfo;
 import com.mongodb.MongoClient;
@@ -184,7 +183,6 @@ public class CustomerServiceImpl extends CustomerService {
     return sessionId;
   }
 
-
   @Override
   public String testPrepare(String id) {
     final ClientSession clientSession = mongoClient.startSession();
@@ -196,10 +194,18 @@ public class CustomerServiceImpl extends CustomerService {
   }
 
   @Override
-  public void testCommit(String id) {
-    final ClientSession session = sessionMap.get(id);
+  public void commitMongoTransaction(String mongoSessionId) {
+    final ClientSession session = sessionMap.get(mongoSessionId);
     session.commitTransaction();
     session.close();
-    sessionMap.remove(id);
+    sessionMap.remove(mongoSessionId);
+  }
+
+  @Override
+  public void abortMongoTransaction(String mongoSessionId) {
+    final ClientSession session = sessionMap.get(mongoSessionId);
+    session.abortTransaction();
+    session.close();
+    sessionMap.remove(mongoSessionId);
   }
 }
