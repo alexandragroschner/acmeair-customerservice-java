@@ -30,6 +30,7 @@ import jakarta.inject.Inject;
 import org.bson.Document;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
+import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,17 +59,22 @@ public class CustomerServiceImpl extends CustomerService {
 
   @Override
   public Long count() {
+    /* REMOVED DB CALL
     return customer.countDocuments();
+     */
+    return 1L;
   }
 
   @Override
   public void createCustomer(CustomerInfo customerInfo) {
+    // NOT CHANGING DB CALL AS IT IS NOT USED
     Document customerDoc = parseCustomerInfo(customerInfo);
     customer.insertOne(customerDoc);
   }
 
   @Override
   public void createCustomers(List<CustomerInfo> customers) {
+    // NOT CHANGING DB CALL AS IT IS ONLY USED BY DB INIT
     List<Document> documents = new ArrayList<>(WRITE_BATCH_SIZE);
     for (int i=0; i<customers.size(); i++) {
       documents.add(parseCustomerInfo(customers.get(i)));
@@ -90,20 +96,37 @@ public class CustomerServiceImpl extends CustomerService {
   public void updateCustomer(String username, CustomerInfo customerInfo) {
     Document address = parseAddressInfo(customerInfo.getAddress());
 
+    /* REMOVED DB CALL
     customer.updateOne(eq("_id", customerInfo.get_id()),
         combine(set("address", address),
             set("phoneNumber", customerInfo.getPhoneNumber()),
             set("phoneNumberType", customerInfo.getPhoneNumberType())));
+     */
   }
 
   @Override
   protected String getCustomer(String username) {
-    return customer.find(eq("_id", username)).first().toJson();
+    /* REMOVED DB CALL
+		return customer.find(eq("_id", username)).first().toJson();
+		 */
+    // ADDED HARD-CODED USER
+    Document customerDoc = createFakeCustomerDoc(username);
+    CustomerMilesResponse milesResponse = bookingClient.getCustomerRewards(username);
+    if (customerDoc != null) {
+      customerDoc.append("total_miles", milesResponse.getMiles().toString());
+      customerDoc.append("loyaltyPoints", milesResponse.getLoyaltyPoints().toString());
+    }
+    return customerDoc.toJson();
   }
 
   @Override
   public String getCustomerByUsername(String username) {
+    /* REMOVED DB CALL
     Document customerDoc = customer.find(eq("_id", username)).first();
+     */
+    // ADDED HARD-CODED ADDRESS AND USER
+    Document customerDoc = createFakeCustomerDoc(username);
+
     CustomerMilesResponse milesResponse = bookingClient.getCustomerRewards(username);
     if (customerDoc != null) {
       customerDoc.remove("password");
@@ -116,6 +139,7 @@ public class CustomerServiceImpl extends CustomerService {
 
   @Override
   public void dropCustomers() {
+    // NOT CHANGING DB CALL AS IT IS ONLY USED BY DB INIT
     customer.deleteMany(new Document());
 
   }
@@ -130,18 +154,27 @@ public class CustomerServiceImpl extends CustomerService {
     if (isPopulated) {
       return true;
     }
-        
+
+    /*
+    REMOVED DB CALL
     if (customer.countDocuments() > 0) {
       isPopulated = true;
       return true;
     } else {
       return false;
     }
+     */
+    return true;
   }
 
   @Override
   public boolean isConnected() {
+    /*
+    REMOVED DB CALL
     return (customer.countDocuments() >= 0);
+     */
+
+    return true;
   }
 
   private Document parseCustomerInfo(CustomerInfo customerInfo) {
@@ -158,5 +191,20 @@ public class CustomerServiceImpl extends CustomerService {
             .append("stateProvince", addressInfo.getStateProvince())
             .append("country", addressInfo.getCountry())
             .append("postalCode", addressInfo.getPostalCode());
+  }
+
+  private Document createFakeCustomerDoc(String username) {
+    Document addressDoc = new Document("streetAddress1", "123 Main St.")
+            .append("city", "Anytown")
+            .append("stateProvince", "NC")
+            .append("country", "USA")
+            .append("postalCode", "27617");
+
+    Document customerDoc = new Document("_id", username)
+            .append("password", "password")
+            .append("address", Document.parse(addressDoc.toJson()))
+            .append("phoneNumber", "919-123-4567")
+            .append("phoneNumberType", "BUSINESS");
+    return customerDoc;
   }
 }

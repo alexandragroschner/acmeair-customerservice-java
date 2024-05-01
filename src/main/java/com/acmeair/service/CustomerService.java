@@ -61,7 +61,9 @@ public abstract class CustomerService {
       validatedCustomer = password.equals((String) customerJson.getString("password"));
 
     }
-    return validatedCustomer;
+    // REMOVED CUSTOMER VALIDATION (DUE TO LACK OF CHECKING AGAINST DB)
+    // return validatedCustomer;
+    return true;
   }
 
   /**
